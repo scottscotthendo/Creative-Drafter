@@ -135,21 +135,25 @@ export default function DraftPage() {
 
   if (error && !brief) {
     return (
-      <div className="rounded-lg border border-red-800 bg-red-950 p-6">
-        <p className="text-red-300">{error}</p>
+      <div className="pixel-card p-6 border-retro-red">
+        <p className="font-pixel text-[9px] text-retro-red tracking-widest mb-2">
+          ERROR
+        </p>
+        <p className="text-sm text-retro-text">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Brief summary */}
       {brief && <BriefViewer brief={brief} />}
 
       {/* Error banner */}
       {error && (
-        <div className="rounded-lg border border-red-800 bg-red-950 p-4">
-          <p className="text-sm text-red-300">{error}</p>
+        <div className="pixel-card p-4 border-retro-red">
+          <p className="font-pixel text-[9px] text-retro-red">ERROR:</p>
+          <p className="text-sm text-retro-text mt-1">{error}</p>
         </div>
       )}
 
@@ -163,7 +167,11 @@ export default function DraftPage() {
       )}
 
       {stage === "clarifying" && questions.length === 0 && (
-        <div className="text-center text-zinc-400">Analyzing brief...</div>
+        <div className="text-center">
+          <p className="font-pixel text-[10px] text-retro-cyan cursor-blink">
+            ANALYZING BRIEF
+          </p>
+        </div>
       )}
 
       {/* Ready to generate */}
@@ -171,11 +179,8 @@ export default function DraftPage() {
         <div className="space-y-6">
           <ModelRecommendation brief={structuredBrief} />
           <div className="flex justify-center">
-            <button
-              onClick={handleGenerate}
-              className="rounded-lg bg-white px-8 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-200"
-            >
-              Generate Drafts
+            <button onClick={handleGenerate} className="pixel-btn">
+              PUSH PIXELS
             </button>
           </div>
         </div>
@@ -183,10 +188,12 @@ export default function DraftPage() {
 
       {/* Generating */}
       {stage === "generating" && (
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-zinc-600 border-t-white" />
-          <p className="mt-4 text-zinc-400">
-            Generating your creative assets...
+        <div className="text-center py-8">
+          <p className="font-pixel text-sm text-retro-cyan animate-pulse">
+            PUSHING PIXELS...
+          </p>
+          <p className="font-mono text-xs text-retro-muted mt-3">
+            Crafting prompt & generating assets
           </p>
         </div>
       )}

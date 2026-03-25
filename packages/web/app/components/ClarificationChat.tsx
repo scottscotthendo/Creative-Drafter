@@ -30,27 +30,34 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-      {analysis && (
-        <p className="mb-4 text-sm text-zinc-400 italic">{analysis}</p>
-      )}
+    <div className="pixel-card p-6">
+      <p className="font-pixel text-[9px] text-retro-magenta tracking-widest mb-4">
+        CLARIFICATION NEEDED
+      </p>
 
-      <h3 className="mb-4 text-sm font-semibold text-zinc-300">
-        A few questions to nail the brief:
-      </h3>
+      {analysis && (
+        <div className="mb-4 bg-retro-dark pixel-border p-3">
+          <p className="text-sm text-retro-muted font-mono italic">
+            &gt; {analysis}
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {questions.map((question, i) => (
           <div key={i}>
-            <label className="mb-1.5 block text-sm text-zinc-300">
+            <label className="block mb-2 text-sm text-retro-text">
+              <span className="font-pixel text-[9px] text-retro-cyan mr-2">
+                Q{i + 1}
+              </span>
               {question}
             </label>
             <input
               type="text"
               value={answers[i]}
               onChange={(e) => updateAnswer(i, e.target.value)}
-              className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm outline-none focus:border-zinc-500"
-              placeholder="Your answer..."
+              className="pixel-input"
+              placeholder="> your answer..."
             />
           </div>
         ))}
@@ -58,9 +65,9 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
         <button
           type="submit"
           disabled={submitting || answers.every((a) => !a.trim())}
-          className="rounded-lg bg-white px-6 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="pixel-btn"
         >
-          {submitting ? "Analyzing..." : "Continue"}
+          {submitting ? "ANALYZING..." : "CONTINUE >>"}
         </button>
       </form>
     </div>

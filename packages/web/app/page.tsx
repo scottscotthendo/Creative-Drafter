@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-type InputMode = "notion" | "upload";
+type InputMode = "upload" | "notion";
 
 export default function Home() {
   const [mode, setMode] = useState<InputMode>("upload");
@@ -12,7 +12,6 @@ export default function Home() {
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const mediaInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   async function handleNotionSubmit(e: React.FormEvent) {
@@ -89,35 +88,38 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-10 pt-16">
+    <div className="flex flex-col items-center gap-10 pt-12">
+      {/* Hero */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Design briefs → drafts
+        <h2 className="font-pixel text-xl text-retro-bright leading-relaxed">
+          BRIEFS IN.
+          <br />
+          <span className="text-retro-cyan">DRAFTS OUT.</span>
         </h2>
-        <p className="mt-3 text-zinc-400">
-          Upload a Notion export or paste a Notion URL to generate creative
-          assets
+        <p className="mt-4 text-sm text-retro-muted max-w-md">
+          Drop a Notion export or paste a URL. We ask the right questions,
+          pick the cheapest model that fits, and push pixels.
         </p>
       </div>
 
-      {/* Mode toggle */}
-      <div className="flex rounded-lg border border-zinc-700 bg-zinc-900 p-1">
+      {/* Mode toggle — pixel tab style */}
+      <div className="flex">
         <button
           onClick={() => setMode("upload")}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+          className={`font-pixel text-[10px] uppercase tracking-wider px-5 py-3 border-2 transition-all duration-0 ${
             mode === "upload"
-              ? "bg-zinc-700 text-white"
-              : "text-zinc-400 hover:text-zinc-200"
+              ? "bg-retro-panel border-retro-cyan text-retro-cyan border-b-retro-panel z-10"
+              : "bg-retro-dark border-retro-border text-retro-muted hover:text-retro-text"
           }`}
         >
-          Upload files
+          Upload Files
         </button>
         <button
           onClick={() => setMode("notion")}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+          className={`font-pixel text-[10px] uppercase tracking-wider px-5 py-3 border-2 -ml-[2px] transition-all duration-0 ${
             mode === "notion"
-              ? "bg-zinc-700 text-white"
-              : "text-zinc-400 hover:text-zinc-200"
+              ? "bg-retro-panel border-retro-cyan text-retro-cyan border-b-retro-panel z-10"
+              : "bg-retro-dark border-retro-border text-retro-muted hover:text-retro-text"
           }`}
         >
           Notion URL
@@ -127,22 +129,33 @@ export default function Home() {
       {/* Upload mode */}
       {mode === "upload" && (
         <form onSubmit={handleUploadSubmit} className="w-full max-w-xl">
-          {/* Drop zone */}
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleMediaDrop}
-            className="rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900 p-8 text-center hover:border-zinc-500 transition-colors"
+            className="pixel-card p-8 text-center hover:border-retro-cyan transition-colors duration-100"
           >
-            <p className="text-sm text-zinc-400">
-              Drop your Notion export here
+            {/* Pixel art drop icon */}
+            <div className="flex justify-center mb-4">
+              <div className="grid grid-cols-5 gap-[2px]">
+                {[0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0, 0,0,1,0,0, 0,0,1,0,0].map((on, i) => (
+                  <div
+                    key={i}
+                    className={`h-[6px] w-[6px] ${on ? "bg-retro-cyan opacity-60" : "bg-transparent"}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <p className="font-pixel text-[10px] text-retro-text tracking-wider">
+              DROP FILES HERE
             </p>
-            <p className="mt-1 text-xs text-zinc-600">
-              .md file + images/videos, or drag them separately
+            <p className="mt-2 text-xs text-retro-muted">
+              .md brief + images/videos from Notion export
             </p>
 
-            <div className="mt-4 flex justify-center gap-3">
-              <label className="cursor-pointer rounded-md bg-zinc-800 px-4 py-2 text-xs text-zinc-300 hover:bg-zinc-700">
-                Choose .md file
+            <div className="mt-5 flex justify-center gap-3">
+              <label className="pixel-btn-secondary cursor-pointer text-[9px] px-4 py-2">
+                CHOOSE .MD
                 <input
                   type="file"
                   accept=".md,.markdown,.txt"
@@ -152,10 +165,9 @@ export default function Home() {
                   }}
                 />
               </label>
-              <label className="cursor-pointer rounded-md bg-zinc-800 px-4 py-2 text-xs text-zinc-300 hover:bg-zinc-700">
-                Add images/videos
+              <label className="pixel-btn-secondary cursor-pointer text-[9px] px-4 py-2">
+                ADD MEDIA
                 <input
-                  ref={mediaInputRef}
                   type="file"
                   accept="image/*,video/*"
                   multiple
@@ -173,28 +185,30 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Selected files summary */}
+          {/* Selected files */}
           {(markdownFile || mediaFiles.length > 0) && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 space-y-1">
               {markdownFile && (
-                <div className="flex items-center justify-between rounded-md bg-zinc-900 px-3 py-2 text-sm">
-                  <span className="text-zinc-300">{markdownFile.name}</span>
+                <div className="flex items-center justify-between pixel-border px-3 py-2">
+                  <span className="text-xs text-retro-green font-mono">
+                    &gt; {markdownFile.name}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setMarkdownFile(null)}
-                    className="text-xs text-zinc-500 hover:text-zinc-300"
+                    className="font-pixel text-[8px] text-retro-red hover:text-retro-bright"
                   >
-                    remove
+                    [X]
                   </button>
                 </div>
               )}
               {mediaFiles.map((file, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between rounded-md bg-zinc-900 px-3 py-2 text-sm"
+                  className="flex items-center justify-between pixel-border px-3 py-2"
                 >
-                  <span className="text-zinc-400">
-                    {file.type.startsWith("video/") ? "Video" : "Image"}:{" "}
+                  <span className="text-xs text-retro-text font-mono">
+                    &gt; {file.type.startsWith("video/") ? "[VID]" : "[IMG]"}{" "}
                     {file.name}
                   </span>
                   <button
@@ -202,9 +216,9 @@ export default function Home() {
                     onClick={() =>
                       setMediaFiles((prev) => prev.filter((_, j) => j !== i))
                     }
-                    className="text-xs text-zinc-500 hover:text-zinc-300"
+                    className="font-pixel text-[8px] text-retro-red hover:text-retro-bright"
                   >
-                    remove
+                    [X]
                   </button>
                 </div>
               ))}
@@ -214,9 +228,9 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading || !markdownFile}
-            className="mt-4 w-full rounded-lg bg-white py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="pixel-btn w-full mt-4"
           >
-            {loading ? "Parsing..." : "Start"}
+            {loading ? "LOADING..." : "START"}
           </button>
         </form>
       )}
@@ -224,46 +238,53 @@ export default function Home() {
       {/* Notion URL mode */}
       {mode === "notion" && (
         <form onSubmit={handleNotionSubmit} className="w-full max-w-xl">
-          <p className="mb-3 text-xs text-zinc-500">
-            Requires NOTION_API_KEY configured on the server. The page must be
-            shared with your integration.
+          <p className="mb-3 font-pixel text-[8px] text-retro-muted tracking-wider">
+            REQUIRES NOTION_API_KEY ON SERVER
           </p>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://notion.so/your-brief-page..."
-              className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm placeholder-zinc-500 outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+              placeholder="https://notion.so/your-brief..."
+              className="pixel-input flex-1"
             />
             <button
               type="submit"
               disabled={loading || !url.trim()}
-              className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="pixel-btn"
             >
-              {loading ? "Loading..." : "Start"}
+              {loading ? "..." : "GO"}
             </button>
           </div>
         </form>
       )}
 
+      {/* Error */}
       {error && (
-        <p className="text-sm text-red-400">{error}</p>
+        <div className="w-full max-w-xl pixel-border px-4 py-3 border-retro-red">
+          <p className="font-pixel text-[9px] text-retro-red">ERROR:</p>
+          <p className="text-xs text-retro-text mt-1">{error}</p>
+        </div>
       )}
 
-      <div className="mt-4 grid grid-cols-3 gap-6 text-center text-sm text-zinc-500">
-        <div>
-          <div className="mb-2 text-lg">1</div>
-          <div>Upload brief or paste Notion URL</div>
-        </div>
-        <div>
-          <div className="mb-2 text-lg">2</div>
-          <div>Answer clarifying questions</div>
-        </div>
-        <div>
-          <div className="mb-2 text-lg">3</div>
-          <div>Get image & video drafts</div>
-        </div>
+      {/* Steps — pixel style */}
+      <div className="mt-6 grid grid-cols-3 gap-4 w-full max-w-xl">
+        {[
+          { step: "01", label: "LOAD BRIEF", desc: "Upload or paste URL" },
+          { step: "02", label: "CLARIFY", desc: "AI asks what's missing" },
+          { step: "03", label: "GENERATE", desc: "Get image & video drafts" },
+        ].map(({ step, label, desc }) => (
+          <div key={step} className="pixel-card p-4 text-center">
+            <div className="font-pixel text-lg text-retro-cyan opacity-30">
+              {step}
+            </div>
+            <div className="font-pixel text-[8px] text-retro-text mt-2 tracking-wider">
+              {label}
+            </div>
+            <div className="text-[11px] text-retro-muted mt-1">{desc}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

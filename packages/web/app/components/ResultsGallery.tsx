@@ -11,9 +11,11 @@ interface Props {
 export function ResultsGallery({ result, modelSelection, promptUsed }: Props) {
   if (result.status === "failed") {
     return (
-      <div className="rounded-lg border border-red-800 bg-red-950 p-6">
-        <h3 className="font-semibold text-red-300">Generation Failed</h3>
-        <p className="mt-2 text-sm text-red-400">
+      <div className="pixel-card p-6 border-retro-red">
+        <p className="font-pixel text-[9px] text-retro-red tracking-widest mb-2">
+          GENERATION FAILED
+        </p>
+        <p className="text-sm text-retro-text">
           The model returned an error. Try adjusting your brief or selecting a
           different model.
         </p>
@@ -23,17 +25,15 @@ export function ResultsGallery({ result, modelSelection, promptUsed }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-        <h3 className="mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-          Generated Drafts
-        </h3>
+      {/* Results */}
+      <div className="pixel-card p-6">
+        <p className="font-pixel text-[9px] text-retro-green tracking-widest mb-4">
+          GENERATION COMPLETE
+        </p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {result.outputs.map((output, i) => (
-            <div
-              key={i}
-              className="overflow-hidden rounded-lg border border-zinc-700"
-            >
+            <div key={i} className="pixel-border overflow-hidden bg-retro-dark">
               {output.type === "image" ? (
                 <img
                   src={output.url}
@@ -48,11 +48,11 @@ export function ResultsGallery({ result, modelSelection, promptUsed }: Props) {
                   playsInline
                 />
               )}
-              <div className="flex items-center justify-between px-3 py-2 text-xs text-zinc-500">
-                <span>
-                  {output.type === "image" ? "Image" : "Video"}
+              <div className="flex items-center justify-between px-3 py-2">
+                <span className="font-pixel text-[8px] text-retro-muted">
+                  {output.type === "image" ? "[IMG]" : "[VID]"}
                   {output.width && output.height
-                    ? ` · ${output.width}x${output.height}`
+                    ? ` ${output.width}x${output.height}`
                     : ""}
                 </span>
                 <a
@@ -60,9 +60,9 @@ export function ResultsGallery({ result, modelSelection, promptUsed }: Props) {
                   download
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-white"
+                  className="font-pixel text-[8px] text-retro-cyan hover:text-retro-green"
                 >
-                  Download
+                  [DOWNLOAD]
                 </a>
               </div>
             </div>
@@ -70,24 +70,27 @@ export function ResultsGallery({ result, modelSelection, promptUsed }: Props) {
         </div>
       </div>
 
-      {/* Generation metadata */}
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-        <h3 className="mb-3 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
-          Generation Details
-        </h3>
-        <div className="space-y-2 text-xs text-zinc-400">
+      {/* Metadata */}
+      <div className="pixel-card p-6">
+        <p className="font-pixel text-[9px] text-retro-muted tracking-widest mb-3">
+          GENERATION LOG
+        </p>
+        <div className="space-y-2 font-mono text-xs bg-retro-dark pixel-border p-4">
           <div>
-            <span className="text-zinc-500">Model:</span> {result.modelUsed}
+            <span className="text-retro-cyan">MODEL:</span>{" "}
+            <span className="text-retro-text">{result.modelUsed}</span>
           </div>
           {modelSelection && (
             <div>
-              <span className="text-zinc-500">Why this model:</span>{" "}
-              {modelSelection.reasoning}
+              <span className="text-retro-cyan">REASON:</span>{" "}
+              <span className="text-retro-muted">
+                {modelSelection.reasoning}
+              </span>
             </div>
           )}
           <div>
-            <span className="text-zinc-500">Prompt sent:</span>
-            <p className="mt-1 rounded bg-zinc-800 p-2 font-mono text-zinc-300">
+            <span className="text-retro-cyan">PROMPT:</span>
+            <p className="mt-1 text-retro-green opacity-80 pl-2 border-l-2 border-retro-border">
               {promptUsed}
             </p>
           </div>

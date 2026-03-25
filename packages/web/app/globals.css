@@ -2,6 +2,177 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap");
+
 body {
-  @apply bg-zinc-950 text-zinc-100;
+  @apply bg-retro-black text-retro-text font-body;
+  image-rendering: auto;
+}
+
+/* ─── Pixel-art borders ──────────────────────────────────────── */
+.pixel-border {
+  border: 2px solid theme("colors.retro.border");
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.3),
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+.pixel-border-accent {
+  border: 2px solid theme("colors.retro.cyan");
+  box-shadow:
+    4px 4px 0 0 rgba(0, 255, 245, 0.15),
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.3),
+    inset 2px 2px 0 0 rgba(0, 255, 245, 0.1);
+}
+
+/* ─── Pixel button ───────────────────────────────────────────── */
+.pixel-btn {
+  @apply font-pixel text-xs uppercase tracking-wider px-6 py-3;
+  background: theme("colors.retro.cyan");
+  color: theme("colors.retro.black");
+  border: none;
+  box-shadow:
+    4px 4px 0 0 rgba(0, 255, 245, 0.3);
+  transition: all 0.1s steps(1);
+  cursor: pointer;
+}
+
+.pixel-btn:hover {
+  background: theme("colors.retro.green");
+  box-shadow:
+    2px 2px 0 0 rgba(57, 255, 20, 0.4);
+  transform: translate(2px, 2px);
+}
+
+.pixel-btn:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.pixel-btn:disabled {
+  background: theme("colors.retro.muted");
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pixel-btn-secondary {
+  @apply font-pixel text-xs uppercase tracking-wider px-6 py-3;
+  background: transparent;
+  color: theme("colors.retro.cyan");
+  border: 2px solid theme("colors.retro.cyan");
+  box-shadow: 4px 4px 0 0 rgba(0, 255, 245, 0.1);
+  transition: all 0.1s steps(1);
+  cursor: pointer;
+}
+
+.pixel-btn-secondary:hover {
+  background: rgba(0, 255, 245, 0.05);
+  box-shadow: 2px 2px 0 0 rgba(0, 255, 245, 0.2);
+  transform: translate(2px, 2px);
+}
+
+/* ─── Pixel input ────────────────────────────────────────────── */
+.pixel-input {
+  @apply w-full px-4 py-3 text-sm font-body;
+  background: theme("colors.retro.dark");
+  border: 2px solid theme("colors.retro.border");
+  color: theme("colors.retro.bright");
+  outline: none;
+  transition: border-color 0.1s;
+}
+
+.pixel-input::placeholder {
+  color: theme("colors.retro.muted");
+}
+
+.pixel-input:focus {
+  border-color: theme("colors.retro.cyan");
+  box-shadow: 0 0 0 1px rgba(0, 255, 245, 0.1);
+}
+
+/* ─── Pixel card ─────────────────────────────────────────────── */
+.pixel-card {
+  background: theme("colors.retro.panel");
+  border: 2px solid theme("colors.retro.border");
+  box-shadow:
+    4px 4px 0 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Pixel tag / badge ──────────────────────────────────────── */
+.pixel-tag {
+  @apply font-pixel text-[10px] uppercase px-3 py-1;
+  background: rgba(0, 255, 245, 0.1);
+  color: theme("colors.retro.cyan");
+  border: 1px solid rgba(0, 255, 245, 0.2);
+}
+
+.pixel-tag-green {
+  background: rgba(57, 255, 20, 0.1);
+  color: theme("colors.retro.green");
+  border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.pixel-tag-yellow {
+  background: rgba(255, 230, 0, 0.1);
+  color: theme("colors.retro.yellow");
+  border: 1px solid rgba(255, 230, 0, 0.2);
+}
+
+/* ─── Scanline overlay (subtle CRT effect) ───────────────────── */
+.scanlines::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  z-index: 9999;
+}
+
+/* ─── Blinking cursor ────────────────────────────────────────── */
+.cursor-blink::after {
+  content: "_";
+  @apply animate-blink text-retro-cyan;
+}
+
+/* ─── Loading spinner (pixel style) ──────────────────────────── */
+@keyframes pixel-spin {
+  0% { content: "[ / ]"; }
+  25% { content: "[ - ]"; }
+  50% { content: "[ \\ ]"; }
+  75% { content: "[ | ]"; }
+}
+
+.pixel-spinner::after {
+  @apply font-pixel text-retro-cyan text-xs;
+  content: "[ / ]";
+  animation: pixel-spin 0.6s steps(1) infinite;
+}
+
+/* ─── Scrollbar styling ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: theme("colors.retro.dark");
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme("colors.retro.border");
+  border: 1px solid theme("colors.retro.dark");
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme("colors.retro.muted");
 }
