@@ -7,7 +7,7 @@ import type {
   ClarificationResult,
   GenerationResult,
   ModelSelection,
-} from "@creative-drafter/core";
+} from "@pixel-pusher/core";
 import { BriefViewer } from "../components/BriefViewer";
 import { ClarificationChat } from "../components/ClarificationChat";
 import { ModelRecommendation } from "../components/ModelRecommendation";

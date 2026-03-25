@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createNotionClient, fetchBrief } from "@creative-drafter/core";
+import { createNotionClient, fetchBrief } from "@pixel-pusher/core";
 
 export async function POST(req: NextRequest) {
   try {

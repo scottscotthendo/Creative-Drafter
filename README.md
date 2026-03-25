@@ -1,4 +1,4 @@
-# Creative Drafter
+# Pixel Pusher
 
 Generate image and video drafts from design briefs using AI. Reads your brief (from a Notion export or Notion URL), asks clarifying questions when it's incomplete, picks the most cost-appropriate AI model, and generates creative assets via [fal.ai](https://fal.ai).
 
@@ -60,8 +60,8 @@ npm run cli -- https://notion.so/your-brief-page
 ### 2. Install & Configure
 
 ```bash
-git clone https://github.com/scottscotthendo/creative-drafter.git
-cd creative-drafter
+git clone https://github.com/scottscotthendo/Creative-Drafter.git
+cd Creative-Drafter
 cp .env.example .env
 # Fill in your API keys in .env (Notion key is optional)
 

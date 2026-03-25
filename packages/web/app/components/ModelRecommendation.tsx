@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import type { StructuredBrief } from "@creative-drafter/core";
+import type { StructuredBrief } from "@pixel-pusher/core";
 
 // We import the selector logic client-side since it's pure functions (no API calls)
 // This gives instant feedback without a round-trip
-import { selectModels } from "@creative-drafter/core";
+import { selectModels } from "@pixel-pusher/core";
 
 export function ModelRecommendation({ brief }: { brief: StructuredBrief }) {
   const selections = useMemo(() => selectModels(brief), [brief]);

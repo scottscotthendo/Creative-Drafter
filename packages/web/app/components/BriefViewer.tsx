@@ -1,6 +1,6 @@
 "use client";
 
-import type { NotionBrief } from "@creative-drafter/core";
+import type { NotionBrief } from "@pixel-pusher/core";
 
 export function BriefViewer({ brief }: { brief: NotionBrief }) {
   return (

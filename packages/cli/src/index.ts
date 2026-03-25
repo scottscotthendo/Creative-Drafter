@@ -11,13 +11,13 @@ import {
   selectModels,
   configureGenerator,
   generate,
-} from "@creative-drafter/core";
-import type { NotionBrief, StructuredBrief } from "@creative-drafter/core";
+} from "@pixel-pusher/core";
+import type { NotionBrief, StructuredBrief } from "@pixel-pusher/core";
 import { writeFile, mkdir, stat } from "fs/promises";
 import { join, resolve, extname } from "path";
 
 async function main() {
-  p.intro("Creative Drafter");
+  p.intro("Pixel Pusher");
 
   // ─── Validate required env vars (Notion is optional) ──────────
   const missingKeys: string[] = [];
@@ -139,7 +139,7 @@ async function main() {
   } else {
     if (!process.env.NOTION_API_KEY) {
       p.cancel(
-        "NOTION_API_KEY is not set. Use a markdown file instead:\n  creative-drafter ./brief.md"
+        "NOTION_API_KEY is not set. Use a markdown file instead:\n  pixel-pusher ./brief.md"
       );
       process.exit(1);
     }

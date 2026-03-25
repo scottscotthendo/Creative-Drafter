@@ -1,6 +1,6 @@
 "use client";
 
-import type { GenerationResult, ModelSelection } from "@creative-drafter/core";
+import type { GenerationResult, ModelSelection } from "@pixel-pusher/core";
 
 interface Props {
   result: GenerationResult;

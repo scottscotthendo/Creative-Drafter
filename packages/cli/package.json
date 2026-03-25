@@ -1,10 +1,10 @@
 {
-  "name": "@creative-drafter/cli",
+  "name": "@pixel-pusher/cli",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "creative-drafter": "dist/index.js"
+    "pixel-pusher": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,7 @@
     "dev": "tsc && node dist/index.js"
   },
   "dependencies": {
-    "@creative-drafter/core": "*",
+    "@pixel-pusher/core": "*",
     "@clack/prompts": "^0.8.0",
     "dotenv": "^16.4.0"
   },

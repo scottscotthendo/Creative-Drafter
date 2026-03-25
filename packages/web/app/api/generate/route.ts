@@ -4,8 +4,8 @@ import {
   generate,
   selectModel,
   createPromptEngineer,
-} from "@creative-drafter/core";
-import type { StructuredBrief } from "@creative-drafter/core";
+} from "@pixel-pusher/core";
+import type { StructuredBrief } from "@pixel-pusher/core";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     // Select model
     const selection = selectModel(brief);
     const model = modelOverride
-      ? (await import("@creative-drafter/core")).getModelById(modelOverride) ||
+      ? (await import("@pixel-pusher/core")).getModelById(modelOverride) ||
         selection.model
       : selection.model;
 

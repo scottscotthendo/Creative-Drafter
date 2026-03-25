@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@creative-drafter/core"],
+  transpilePackages: ["@pixel-pusher/core"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.fal.media" },

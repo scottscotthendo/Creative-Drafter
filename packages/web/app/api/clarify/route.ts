@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAnalyzer } from "@creative-drafter/core";
-import type { NotionBrief } from "@creative-drafter/core";
+import { createAnalyzer } from "@pixel-pusher/core";
+import type { NotionBrief } from "@pixel-pusher/core";
 
 export async function POST(req: NextRequest) {
   try {

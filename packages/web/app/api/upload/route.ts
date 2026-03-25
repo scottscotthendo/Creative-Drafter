@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseBriefFromMarkdownText } from "@creative-drafter/core";
-import type { MediaAttachment } from "@creative-drafter/core";
+import { parseBriefFromMarkdownText } from "@pixel-pusher/core";
+import type { MediaAttachment } from "@pixel-pusher/core";
 
 export async function POST(req: NextRequest) {
   try {
