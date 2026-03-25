@@ -14,42 +14,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen scanlines">
-        {/* Header */}
-        <header className="border-b-2 border-retro-border bg-retro-dark px-6 py-4">
+        <header className="border-b border-surface-4 bg-surface-1/80 backdrop-blur-md px-6 py-4 sticky top-0 z-50">
           <div className="mx-auto flex max-w-4xl items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Pixel art logo — a tiny sprite */}
-              <div className="grid grid-cols-3 grid-rows-3 gap-[2px]">
-                <div className="h-2 w-2 bg-retro-cyan" />
-                <div className="h-2 w-2 bg-retro-magenta" />
-                <div className="h-2 w-2 bg-retro-cyan" />
-                <div className="h-2 w-2 bg-retro-magenta" />
-                <div className="h-2 w-2 bg-retro-green" />
-                <div className="h-2 w-2 bg-retro-magenta" />
-                <div className="h-2 w-2 bg-retro-cyan" />
-                <div className="h-2 w-2 bg-retro-magenta" />
-                <div className="h-2 w-2 bg-retro-cyan" />
+              {/* Pixel sprite logo — small and tasteful */}
+              <div className="grid grid-cols-3 gap-[2px] opacity-80">
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-cyan" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-magenta" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-cyan" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-magenta" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-green" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-magenta" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-cyan" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-magenta" />
+                <div className="h-[5px] w-[5px] rounded-[1px] bg-accent-cyan" />
               </div>
-              <h1 className="font-pixel text-sm text-retro-cyan tracking-wider">
+              <h1 className="font-pixel text-[11px] text-text-bright tracking-wider">
                 PIXEL PUSHER
               </h1>
             </div>
-            <span className="font-pixel text-[10px] text-retro-muted">
-              v0.1
-            </span>
+            <span className="text-xs text-muted font-mono">v0.1</span>
           </div>
         </header>
 
-        <main className="mx-auto max-w-4xl px-6 py-8">{children}</main>
-
-        {/* Footer */}
-        <footer className="mt-auto border-t-2 border-retro-border px-6 py-4">
-          <div className="mx-auto max-w-4xl text-center">
-            <p className="font-pixel text-[8px] text-retro-muted tracking-widest">
-              BRIEF → CLARIFY → SELECT MODEL → GENERATE
-            </p>
-          </div>
-        </footer>
+        <main className="mx-auto max-w-4xl px-6 py-10">{children}</main>
       </body>
     </html>
   );

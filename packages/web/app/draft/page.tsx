@@ -7,7 +7,7 @@ import type {
   ClarificationResult,
   GenerationResult,
   ModelSelection,
-} from "@pixel-pusher/core";
+} from "@pixel-pusher/core/client";
 import { BriefViewer } from "../components/BriefViewer";
 import { ClarificationChat } from "../components/ClarificationChat";
 import { ModelRecommendation } from "../components/ModelRecommendation";
@@ -135,11 +135,11 @@ export default function DraftPage() {
 
   if (error && !brief) {
     return (
-      <div className="pixel-card p-6 border-retro-red">
-        <p className="font-pixel text-[9px] text-retro-red tracking-widest mb-2">
+      <div className="card p-6 !border-accent-red/30">
+        <p className="font-pixel text-[9px] text-accent-red tracking-widest mb-2">
           ERROR
         </p>
-        <p className="text-sm text-retro-text">{error}</p>
+        <p className="text-sm text-text-secondary">{error}</p>
       </div>
     );
   }
@@ -151,9 +151,9 @@ export default function DraftPage() {
 
       {/* Error banner */}
       {error && (
-        <div className="pixel-card p-4 border-retro-red">
-          <p className="font-pixel text-[9px] text-retro-red">ERROR:</p>
-          <p className="text-sm text-retro-text mt-1">{error}</p>
+        <div className="card p-4 !border-accent-red/30">
+          <p className="font-pixel text-[9px] text-accent-red">ERROR</p>
+          <p className="text-sm text-text-secondary mt-1">{error}</p>
         </div>
       )}
 
@@ -167,8 +167,8 @@ export default function DraftPage() {
       )}
 
       {stage === "clarifying" && questions.length === 0 && (
-        <div className="text-center">
-          <p className="font-pixel text-[10px] text-retro-cyan cursor-blink">
+        <div className="text-center py-6">
+          <p className="font-pixel text-[10px] text-accent-cyan cursor-blink">
             ANALYZING BRIEF
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function DraftPage() {
         <div className="space-y-6">
           <ModelRecommendation brief={structuredBrief} />
           <div className="flex justify-center">
-            <button onClick={handleGenerate} className="pixel-btn">
+            <button onClick={handleGenerate} className="btn-primary">
               PUSH PIXELS
             </button>
           </div>
@@ -188,11 +188,13 @@ export default function DraftPage() {
 
       {/* Generating */}
       {stage === "generating" && (
-        <div className="text-center py-8">
-          <p className="font-pixel text-sm text-retro-cyan animate-pulse">
-            PUSHING PIXELS...
-          </p>
-          <p className="font-mono text-xs text-retro-muted mt-3">
+        <div className="text-center py-10">
+          <div className="inline-block animate-pulse-glow rounded-card p-6">
+            <p className="font-pixel text-sm text-accent-cyan">
+              PUSHING PIXELS...
+            </p>
+          </div>
+          <p className="font-mono text-xs text-muted mt-4">
             Crafting prompt & generating assets
           </p>
         </div>

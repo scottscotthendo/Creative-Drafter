@@ -30,24 +30,22 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
   }
 
   return (
-    <div className="pixel-card p-6">
-      <p className="font-pixel text-[9px] text-retro-magenta tracking-widest mb-4">
+    <div className="card p-6">
+      <p className="font-pixel text-[9px] text-accent-magenta tracking-widest mb-4">
         CLARIFICATION NEEDED
       </p>
 
       {analysis && (
-        <div className="mb-4 bg-retro-dark pixel-border p-3">
-          <p className="text-sm text-retro-muted font-mono italic">
-            &gt; {analysis}
-          </p>
+        <div className="terminal p-3 mb-4">
+          <p className="text-sm text-muted italic">&gt; {analysis}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {questions.map((question, i) => (
           <div key={i}>
-            <label className="block mb-2 text-sm text-retro-text">
-              <span className="font-pixel text-[9px] text-retro-cyan mr-2">
+            <label className="block mb-2 text-sm text-text-primary leading-relaxed">
+              <span className="font-pixel text-[9px] text-accent-cyan mr-2">
                 Q{i + 1}
               </span>
               {question}
@@ -56,8 +54,8 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
               type="text"
               value={answers[i]}
               onChange={(e) => updateAnswer(i, e.target.value)}
-              className="pixel-input"
-              placeholder="> your answer..."
+              className="input"
+              placeholder="Your answer..."
             />
           </div>
         ))}
@@ -65,7 +63,7 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
         <button
           type="submit"
           disabled={submitting || answers.every((a) => !a.trim())}
-          className="pixel-btn"
+          className="btn-primary"
         >
           {submitting ? "ANALYZING..." : "CONTINUE >>"}
         </button>

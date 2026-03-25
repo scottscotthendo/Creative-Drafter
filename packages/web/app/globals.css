@@ -5,122 +5,116 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap");
 
 body {
-  @apply bg-retro-black text-retro-text font-body;
-  image-rendering: auto;
+  @apply bg-surface-0 text-text-primary font-body;
 }
 
-/* ─── Pixel-art borders ──────────────────────────────────────── */
-.pixel-border {
-  border: 2px solid theme("colors.retro.border");
+/* ─── Cards — Raycast style with subtle pixel nod ────────────── */
+.card {
+  @apply bg-surface-2 rounded-card border border-surface-4;
   box-shadow:
-    inset -2px -2px 0 0 rgba(0, 0, 0, 0.3),
-    inset 2px 2px 0 0 rgba(255, 255, 255, 0.03);
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.pixel-border-accent {
-  border: 2px solid theme("colors.retro.cyan");
+.card-accent {
+  @apply bg-surface-2 rounded-card;
+  border: 1px solid rgba(0, 229, 255, 0.15);
   box-shadow:
-    4px 4px 0 0 rgba(0, 255, 245, 0.15),
-    inset -2px -2px 0 0 rgba(0, 0, 0, 0.3),
-    inset 2px 2px 0 0 rgba(0, 255, 245, 0.1);
+    0 0 20px rgba(0, 229, 255, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-/* ─── Pixel button ───────────────────────────────────────────── */
-.pixel-btn {
-  @apply font-pixel text-xs uppercase tracking-wider px-6 py-3;
-  background: theme("colors.retro.cyan");
-  color: theme("colors.retro.black");
-  border: none;
-  box-shadow:
-    4px 4px 0 0 rgba(0, 255, 245, 0.3);
-  transition: all 0.1s steps(1);
-  cursor: pointer;
+/* ─── Buttons — clean with pixel font ────────────────────────── */
+.btn-primary {
+  @apply font-pixel text-[10px] uppercase tracking-wider px-6 py-3 rounded-btn;
+  @apply transition-all duration-150 ease-out;
+  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+  color: #0c0b12;
+  box-shadow: 0 2px 12px rgba(0, 229, 255, 0.2);
 }
 
-.pixel-btn:hover {
-  background: theme("colors.retro.green");
-  box-shadow:
-    2px 2px 0 0 rgba(57, 255, 20, 0.4);
-  transform: translate(2px, 2px);
+.btn-primary:hover {
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+  transform: translateY(-1px);
 }
 
-.pixel-btn:active {
-  box-shadow: none;
-  transform: translate(4px, 4px);
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 8px rgba(0, 229, 255, 0.15);
 }
 
-.pixel-btn:disabled {
-  background: theme("colors.retro.muted");
-  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.2);
-  cursor: not-allowed;
+.btn-primary:disabled {
+  @apply opacity-30 cursor-not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.pixel-btn-secondary {
-  @apply font-pixel text-xs uppercase tracking-wider px-6 py-3;
+.btn-secondary {
+  @apply font-pixel text-[10px] uppercase tracking-wider px-5 py-2.5 rounded-btn;
+  @apply transition-all duration-150 ease-out;
   background: transparent;
-  color: theme("colors.retro.cyan");
-  border: 2px solid theme("colors.retro.cyan");
-  box-shadow: 4px 4px 0 0 rgba(0, 255, 245, 0.1);
-  transition: all 0.1s steps(1);
-  cursor: pointer;
+  color: theme("colors.accent.cyan");
+  border: 1px solid rgba(0, 229, 255, 0.2);
 }
 
-.pixel-btn-secondary:hover {
-  background: rgba(0, 255, 245, 0.05);
-  box-shadow: 2px 2px 0 0 rgba(0, 255, 245, 0.2);
-  transform: translate(2px, 2px);
+.btn-secondary:hover {
+  background: rgba(0, 229, 255, 0.05);
+  border-color: rgba(0, 229, 255, 0.35);
 }
 
-/* ─── Pixel input ────────────────────────────────────────────── */
-.pixel-input {
-  @apply w-full px-4 py-3 text-sm font-body;
-  background: theme("colors.retro.dark");
-  border: 2px solid theme("colors.retro.border");
-  color: theme("colors.retro.bright");
-  outline: none;
-  transition: border-color 0.1s;
+/* ─── Inputs — Raycast clean ─────────────────────────────────── */
+.input {
+  @apply w-full px-4 py-3 text-sm font-body rounded-btn;
+  @apply bg-surface-1 border border-surface-4 text-text-primary;
+  @apply outline-none transition-all duration-150;
 }
 
-.pixel-input::placeholder {
-  color: theme("colors.retro.muted");
+.input::placeholder {
+  @apply text-muted;
 }
 
-.pixel-input:focus {
-  border-color: theme("colors.retro.cyan");
-  box-shadow: 0 0 0 1px rgba(0, 255, 245, 0.1);
+.input:focus {
+  border-color: rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.08);
 }
 
-/* ─── Pixel card ─────────────────────────────────────────────── */
-.pixel-card {
-  background: theme("colors.retro.panel");
-  border: 2px solid theme("colors.retro.border");
-  box-shadow:
-    4px 4px 0 0 rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+/* ─── Tags / badges — pixel font accent ──────────────────────── */
+.tag {
+  @apply font-pixel text-[9px] uppercase px-2.5 py-1 rounded-pixel;
+  background: rgba(0, 229, 255, 0.08);
+  color: theme("colors.accent.cyan");
+  border: 1px solid rgba(0, 229, 255, 0.12);
 }
 
-/* ─── Pixel tag / badge ──────────────────────────────────────── */
-.pixel-tag {
-  @apply font-pixel text-[10px] uppercase px-3 py-1;
-  background: rgba(0, 255, 245, 0.1);
-  color: theme("colors.retro.cyan");
-  border: 1px solid rgba(0, 255, 245, 0.2);
+.tag-green {
+  @apply font-pixel text-[9px] uppercase px-2.5 py-1 rounded-pixel;
+  background: rgba(57, 255, 20, 0.08);
+  color: theme("colors.accent.green");
+  border: 1px solid rgba(57, 255, 20, 0.12);
 }
 
-.pixel-tag-green {
-  background: rgba(57, 255, 20, 0.1);
-  color: theme("colors.retro.green");
-  border: 1px solid rgba(57, 255, 20, 0.2);
+.tag-yellow {
+  @apply font-pixel text-[9px] uppercase px-2.5 py-1 rounded-pixel;
+  background: rgba(250, 204, 21, 0.08);
+  color: theme("colors.accent.yellow");
+  border: 1px solid rgba(250, 204, 21, 0.12);
 }
 
-.pixel-tag-yellow {
-  background: rgba(255, 230, 0, 0.1);
-  color: theme("colors.retro.yellow");
-  border: 1px solid rgba(255, 230, 0, 0.2);
+.tag-magenta {
+  @apply font-pixel text-[9px] uppercase px-2.5 py-1 rounded-pixel;
+  background: rgba(217, 70, 239, 0.08);
+  color: theme("colors.accent.magenta");
+  border: 1px solid rgba(217, 70, 239, 0.12);
 }
 
-/* ─── Scanline overlay (subtle CRT effect) ───────────────────── */
+/* ─── Code/terminal block ────────────────────────────────────── */
+.terminal {
+  @apply bg-surface-1 rounded-btn border border-surface-4 font-mono text-xs;
+}
+
+/* ─── Subtle scanlines (very faint — Raycast-level subtlety) ── */
 .scanlines::after {
   content: "";
   position: fixed;
@@ -132,9 +126,9 @@ body {
   background: repeating-linear-gradient(
     0deg,
     transparent,
-    transparent 2px,
-    rgba(0, 0, 0, 0.03) 2px,
-    rgba(0, 0, 0, 0.03) 4px
+    transparent 3px,
+    rgba(0, 0, 0, 0.015) 3px,
+    rgba(0, 0, 0, 0.015) 6px
   );
   z-index: 9999;
 }
@@ -142,37 +136,22 @@ body {
 /* ─── Blinking cursor ────────────────────────────────────────── */
 .cursor-blink::after {
   content: "_";
-  @apply animate-blink text-retro-cyan;
+  @apply animate-blink text-accent-cyan;
 }
 
-/* ─── Loading spinner (pixel style) ──────────────────────────── */
-@keyframes pixel-spin {
-  0% { content: "[ / ]"; }
-  25% { content: "[ - ]"; }
-  50% { content: "[ \\ ]"; }
-  75% { content: "[ | ]"; }
-}
-
-.pixel-spinner::after {
-  @apply font-pixel text-retro-cyan text-xs;
-  content: "[ / ]";
-  animation: pixel-spin 0.6s steps(1) infinite;
-}
-
-/* ─── Scrollbar styling ──────────────────────────────────────── */
+/* ─── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: theme("colors.retro.dark");
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme("colors.retro.border");
-  border: 1px solid theme("colors.retro.dark");
+  @apply bg-surface-4 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme("colors.retro.muted");
+  @apply bg-subtle;
 }
