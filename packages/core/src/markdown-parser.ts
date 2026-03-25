@@ -40,9 +40,17 @@ export async function parseBriefFromMarkdown(
   const videos = allMedia.filter((m) => m.type === "video");
 
   // Also extract any image/video URLs referenced inline in the markdown
-  const inlineMedia = extractInlineMedia(content);
+  const { media: inlineMedia, skippedNotionUrls } = extractInlineMedia(content);
   images.push(...inlineMedia.filter((m) => m.type === "image"));
   videos.push(...inlineMedia.filter((m) => m.type === "video"));
+
+  const warnings: string[] = [];
+  if (skippedNotionUrls > 0) {
+    warnings.push(
+      `Skipped ${skippedNotionUrls} Notion-hosted image/video URL(s) — these are private and require API access. ` +
+      `Use Notion's "Export" feature instead to get local copies of all media.`
+    );
+  }
 
   return {
     pageId: `local:${basename(markdownPath)}`,
@@ -51,6 +59,7 @@ export async function parseBriefFromMarkdown(
     properties,
     images,
     videos,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
 
@@ -66,13 +75,33 @@ export function parseBriefFromMarkdownText(
   const bodyText = stripFrontmatter(markdownText);
   const allMedia = mediaAttachments || [];
 
+  // Check for Notion-hosted URLs in the markdown text
+  const { media: inlineMedia, skippedNotionUrls } = extractInlineMedia(markdownText);
+  const images = [
+    ...allMedia.filter((m) => m.type === "image"),
+    ...inlineMedia.filter((m) => m.type === "image"),
+  ];
+  const videos = [
+    ...allMedia.filter((m) => m.type === "video"),
+    ...inlineMedia.filter((m) => m.type === "video"),
+  ];
+
+  const warnings: string[] = [];
+  if (skippedNotionUrls > 0) {
+    warnings.push(
+      `Skipped ${skippedNotionUrls} Notion-hosted image/video URL(s) — these are private and require API access. ` +
+      `Use Notion's "Export" feature instead to get local copies of all media.`
+    );
+  }
+
   return {
     pageId: `upload:${Date.now()}`,
     title,
     bodyText,
     properties,
-    images: allMedia.filter((m) => m.type === "image"),
-    videos: allMedia.filter((m) => m.type === "video"),
+    images,
+    videos,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
 
@@ -195,8 +224,31 @@ function classifyMediaFile(filePath: string): MediaAttachment | null {
  *   [text](url.mp4)       → video (by extension)
  *   ![alt](./local/path)  → local image
  */
-function extractInlineMedia(content: string): MediaAttachment[] {
+/**
+ * Notion-hosted URLs are signed and expire — they won't work without API access.
+ * We skip these and only keep local paths or truly public URLs.
+ */
+const INACCESSIBLE_HOSTS = [
+  "prod-files-secure.s3.us-west-2.amazonaws.com",
+  "s3.us-west-2.amazonaws.com",
+  "file.notion.so",
+];
+
+function isInaccessibleUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return INACCESSIBLE_HOSTS.some((host) => parsed.hostname.includes(host));
+  } catch {
+    return false; // Not a URL (likely a local path) — that's fine
+  }
+}
+
+function extractInlineMedia(content: string): {
+  media: MediaAttachment[];
+  skippedNotionUrls: number;
+} {
   const media: MediaAttachment[] = [];
+  let skippedNotionUrls = 0;
   const linkRegex = /!?\[([^\]]*)\]\(([^)]+)\)/g;
   let match;
 
@@ -206,6 +258,14 @@ function extractInlineMedia(content: string): MediaAttachment[] {
     const url = match[2];
     const ext = extname(url).toLowerCase();
 
+    // Skip Notion-hosted URLs — they're signed/authenticated and won't work
+    // without API access. The user should use Notion's export instead, which
+    // bundles images as local files.
+    if (isInaccessibleUrl(url)) {
+      skippedNotionUrls++;
+      continue;
+    }
+
     if (isImage || IMAGE_EXTENSIONS.has(ext)) {
       media.push({ url, name: alt || basename(url), type: "image" });
     } else if (VIDEO_EXTENSIONS.has(ext)) {
@@ -213,5 +273,5 @@ function extractInlineMedia(content: string): MediaAttachment[] {
     }
   }
 
-  return media;
+  return { media, skippedNotionUrls };
 }

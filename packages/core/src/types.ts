@@ -5,6 +5,7 @@ export interface NotionBrief {
   properties: Record<string, string>;
   images: MediaAttachment[];
   videos: MediaAttachment[];
+  warnings?: string[];
 }
 
 export interface MediaAttachment {

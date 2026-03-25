@@ -170,6 +170,13 @@ async function main() {
     brief.title
   );
 
+  // Show warnings (e.g., skipped Notion-hosted URLs)
+  if (brief.warnings?.length) {
+    for (const warning of brief.warnings) {
+      p.log.warn(warning);
+    }
+  }
+
   // ─── Clarification loop ───────────────────────────────────────
   const analyzer = createAnalyzer(process.env.ANTHROPIC_API_KEY!);
   let structuredBrief: StructuredBrief | null = null;

@@ -29,6 +29,14 @@ export function BriefViewer({ brief }: { brief: NotionBrief }) {
         </div>
       )}
 
+      {brief.warnings && brief.warnings.length > 0 && (
+        <div className="mt-4 rounded-md border border-amber-800/50 bg-amber-950/30 p-3">
+          {brief.warnings.map((warning, i) => (
+            <p key={i} className="text-xs text-amber-300">{warning}</p>
+          ))}
+        </div>
+      )}
+
       {brief.images.length > 0 && (
         <div className="mt-4">
           <p className="mb-2 text-xs font-medium text-zinc-500 uppercase tracking-wider">
