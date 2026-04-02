@@ -287,7 +287,8 @@ async function main() {
         selections.image.model,
         imageIteration
       );
-      imgSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
+      imgSpinner.stop("Prompt crafted");
+      p.note(prompt, "Image prompt");
 
       const genSpinner = p.spinner();
       genSpinner.start("Generating image...");
@@ -352,7 +353,8 @@ async function main() {
         selections.video.model,
         videoIteration
       );
-      vidSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
+      vidSpinner.stop("Prompt crafted");
+      p.note(prompt, "Video prompt");
 
       const genSpinner = p.spinner();
       genSpinner.start("Generating video (this may take a while)...");
