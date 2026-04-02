@@ -119,6 +119,18 @@ export function ResultsGallery({ result, modelSelection, promptUsed, attempt, on
         </form>
       </div>
 
+      {/* Prompt used */}
+      {promptUsed && (
+        <div className="card p-6">
+          <p className="font-body text-xs font-semibold text-forest uppercase tracking-wide mb-3">
+            Prompt sent to model
+          </p>
+          <p className="font-body text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
+            {promptUsed}
+          </p>
+        </div>
+      )}
+
       {/* Generation details */}
       <div className="card p-6">
         <p className="font-body text-xs font-semibold text-text-muted uppercase tracking-wide mb-4">
@@ -135,12 +147,6 @@ export function ResultsGallery({ result, modelSelection, promptUsed, attempt, on
               <span className="text-text-secondary">{modelSelection.reasoning}</span>
             </div>
           )}
-          <div>
-            <span className="text-text-muted">Prompt</span>
-            <p className="mt-1.5 text-text-secondary pl-3 border-l-2 border-surface-3 leading-relaxed">
-              {promptUsed}
-            </p>
-          </div>
         </div>
       </div>
     </div>
