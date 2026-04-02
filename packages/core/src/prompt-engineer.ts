@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { StructuredBrief, ModelProfile } from "./types.js";
+import { HEIDI_BRAND_CONTEXT } from "./heidi-brand.js";
 
 /**
  * Prompt engineering strategies per model family.
@@ -23,7 +24,8 @@ const MODEL_PROMPT_GUIDES: Record<string, string> = {
 - Describe the overall layout and composition clearly
 - Include design style (e.g., "flat design", "gradient background", "minimalist poster")
 - Mention color relationships between text and background
-- For marketing materials, describe the visual hierarchy`,
+- For marketing materials, describe the visual hierarchy
+- For Heidi brand assets: default background to Sand (#F6ECE4) or Sunlight (#FBF582), text colour to Bark (#28030F) for legibility and brand alignment`,
 
   recraft: `You are crafting a prompt for Recraft V3, specialized in graphic design and vector art. Recraft works best with:
 - Design-specific language (e.g., "vector illustration", "flat design", "brand identity")
@@ -33,7 +35,9 @@ const MODEL_PROMPT_GUIDES: Record<string, string> = {
 - Mention if you want vector vs raster output
 - Brand guideline references
 - Specify design elements (icons, shapes, patterns)
-- Works well with graphic design, logos, illustrations`,
+- Works well with graphic design, logos, illustrations
+- For Heidi brand work: clean modern vector style, warm Sand (#F6ECE4) or Sunlight (#FBF582) backgrounds, Bark (#28030F) for text and outlines
+- Avoid cold blues, stark whites, or anything that reads as clinical or pharmaceutical`,
 
   "ltx-video": `You are crafting a prompt for LTX Video, a fast video generation model. LTX works best with:
 - Describe the MOTION first (e.g., "camera slowly pans right", "object rotates 360 degrees")
@@ -86,26 +90,37 @@ export function createPromptEngineer(apiKey: string) {
 
   async function craftPrompt(
     brief: StructuredBrief,
-    model: ModelProfile
+    model: ModelProfile,
+    iteration?: { previousPrompt: string; feedback: string }
   ): Promise<{ prompt: string; negativePrompt?: string }> {
     const family = getModelFamily(model.id);
     const guide = MODEL_PROMPT_GUIDES[family] || MODEL_PROMPT_GUIDES.flux;
+
+    const iterationContext = iteration
+      ? `\n\nPREVIOUS PROMPT:\n"${iteration.previousPrompt}"\n\nUSER FEEDBACK ON THE RESULT:\n"${iteration.feedback}"\n\nRefine the prompt based on this feedback. Keep what worked, change what didn't.`
+      : "";
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1500,
       system: `${guide}
 
-Your task: Given a design brief, craft an OPTIMIZED generation prompt for this specific model.
+Your task: Given a Heidi Health design brief, craft an OPTIMIZED generation prompt for this specific model.
 Transform the brief's intent into the prompt structure that this model handles best.
+
+HEIDI HEALTH BRAND CONTEXT (always apply):
+${HEIDI_BRAND_CONTEXT}
 
 Rules:
 - Output ONLY the generation prompt, nothing else
 - Do not include meta-commentary or explanations
 - The prompt should be 1-4 sentences for video, 1-6 lines for images
 - Capture the brief's intent but express it in the model's optimal prompt language
+- Always reflect Heidi's visual style: warm, human-centric, organic, clean, healthcare-professional
+- Translate "brand colours" to specific hex values (Sunlight #FBF582, Bark #28030F, Sand #F6ECE4, Forest #194B22, Sky #B9CFFF)
 - If the brief mentions specific text to render and the model supports it, include the exact text in quotes
-- If the brief mentions text but the model DOESN'T support text rendering, describe the visual without the text`,
+- If the brief mentions text but the model DOESN'T support text rendering, describe the visual without the text
+- Never produce alarming, cold, or clinical imagery`,
       messages: [
         {
           role: "user",
@@ -115,12 +130,13 @@ Description: ${brief.description}
 Output Type: ${brief.outputType}
 Style: ${brief.style || "not specified"}
 Mood: ${brief.mood || "not specified"}
-Colors: ${brief.colorPalette?.join(", ") || "not specified"}
-Text to include: ${brief.textContent?.join(", ") || "none"}
+Colors: ${Array.isArray(brief.colorPalette) ? brief.colorPalette.join(", ") : (brief.colorPalette || "not specified")}
+Text to include: ${Array.isArray(brief.textContent) ? brief.textContent.join(", ") : (brief.textContent || "none")}
 Target audience: ${brief.targetAudience || "not specified"}
 Aspect ratio: ${brief.aspectRatio || "not specified"}
 Quality tier: ${brief.qualityTier}
 Additional context: ${brief.additionalContext || "none"}
+Brand: Heidi Health — warm, human-centric healthcare AI. Default to Heidi's colour palette unless explicitly overridden.${iterationContext}
 
 Craft the optimal generation prompt for ${model.name} (${model.id}).`,
         },

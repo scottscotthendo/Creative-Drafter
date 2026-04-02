@@ -31,13 +31,13 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
 
   return (
     <div className="card p-6">
-      <p className="font-pixel text-[9px] text-accent-magenta tracking-widest mb-4">
-        CLARIFICATION NEEDED
+      <p className="font-body text-xs font-semibold text-forest uppercase tracking-wide mb-4">
+        A few questions
       </p>
 
       {analysis && (
         <div className="terminal p-3 mb-4">
-          <p className="text-sm text-muted italic">&gt; {analysis}</p>
+          <p className="text-sm text-text-muted italic">{analysis}</p>
         </div>
       )}
 
@@ -45,8 +45,8 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
         {questions.map((question, i) => (
           <div key={i}>
             <label className="block mb-2 text-sm text-text-primary leading-relaxed">
-              <span className="font-pixel text-[9px] text-accent-cyan mr-2">
-                Q{i + 1}
+              <span className="font-body text-xs font-semibold text-forest mr-2">
+                {i + 1}.
               </span>
               {question}
             </label>
@@ -65,7 +65,7 @@ export function ClarificationChat({ questions, analysis, onSubmit }: Props) {
           disabled={submitting || answers.every((a) => !a.trim())}
           className="btn-primary"
         >
-          {submitting ? "ANALYZING..." : "CONTINUE >>"}
+          {submitting ? "Analysing..." : "Continue"}
         </button>
       </form>
     </div>

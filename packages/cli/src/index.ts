@@ -11,13 +11,13 @@ import {
   selectModels,
   configureGenerator,
   generate,
-} from "@pixel-pusher/core";
-import type { NotionBrief, StructuredBrief } from "@pixel-pusher/core";
+} from "@heidi/core";
+import type { NotionBrief, StructuredBrief } from "@heidi/core";
 import { writeFile, mkdir, stat } from "fs/promises";
 import { join, resolve, extname } from "path";
 
 async function main() {
-  p.intro("Pixel Pusher");
+  p.intro("Heidi Creative Studio");
 
   // ─── Validate required env vars (Notion is optional) ──────────
   const missingKeys: string[] = [];
@@ -261,103 +261,154 @@ async function main() {
     process.exit(0);
   }
 
-  // ─── Prompt engineering ───────────────────────────────────────
+  // ─── Prompt engineering + generation (with feedback loop) ───────
   const promptEngineer = createPromptEngineer(process.env.ANTHROPIC_API_KEY!);
   configureGenerator(process.env.FAL_KEY!);
 
-  // Generate for each output type
   const outputDir =
     process.argv.includes("--output")
       ? process.argv[process.argv.indexOf("--output") + 1]
       : "./output";
   await mkdir(outputDir, { recursive: true });
 
-  if (selections.image) {
-    const imgSpinner = p.spinner();
-    imgSpinner.start(
-      `Crafting prompt for ${selections.image.model.name}...`
-    );
-    const { prompt, negativePrompt } = await promptEngineer.craftPrompt(
-      structuredBrief,
-      selections.image.model
-    );
-    imgSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
+  let attempt = 1;
+  let imageIteration: { previousPrompt: string; feedback: string } | undefined;
+  let videoIteration: { previousPrompt: string; feedback: string } | undefined;
 
-    const genSpinner = p.spinner();
-    genSpinner.start("Generating image...");
-    const result = await generate(
-      structuredBrief,
-      selections.image.model,
-      prompt,
-      {
-        negativePrompt,
-        referenceImageUrls: structuredBrief.referenceImages.map(
-          (r: { url: string }) => r.url
-        ),
+  while (true) {
+    const attemptLabel = attempt > 1 ? ` (attempt ${attempt})` : "";
+
+    // ── Image generation ────────────────────────────────────────
+    if (selections.image) {
+      const imgSpinner = p.spinner();
+      imgSpinner.start(`Crafting image prompt for ${selections.image.model.name}${attemptLabel}...`);
+      const { prompt, negativePrompt } = await promptEngineer.craftPrompt(
+        structuredBrief,
+        selections.image.model,
+        imageIteration
+      );
+      imgSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
+
+      const genSpinner = p.spinner();
+      genSpinner.start("Generating image...");
+      const result = await generate(
+        structuredBrief,
+        selections.image.model,
+        prompt,
+        {
+          negativePrompt,
+          referenceImageUrls: structuredBrief.referenceImages.map(
+            (r: { url: string }) => r.url
+          ),
+        }
+      );
+      genSpinner.stop(
+        result.status === "completed"
+          ? `Generated ${result.outputs.length} image(s)`
+          : "Generation failed"
+      );
+
+      for (let i = 0; i < result.outputs.length; i++) {
+        const output = result.outputs[i];
+        const ext = output.format?.includes("png") ? "png" : "jpg";
+        const filename = `${slugify(structuredBrief.title)}-image-v${attempt}-${i + 1}.${ext}`;
+        try {
+          const response = await fetch(output.url);
+          const buffer = Buffer.from(await response.arrayBuffer());
+          await writeFile(join(outputDir, filename), buffer);
+          p.log.success(`Saved: ${join(outputDir, filename)}`);
+        } catch {
+          p.log.warn(`Could not save ${filename}, URL: ${output.url}`);
+        }
       }
-    );
-    genSpinner.stop(
-      result.status === "completed"
-        ? `Generated ${result.outputs.length} image(s)`
-        : "Generation failed"
-    );
 
-    for (let i = 0; i < result.outputs.length; i++) {
-      const output = result.outputs[i];
-      const ext = output.format?.includes("png") ? "png" : "jpg";
-      const filename = `${slugify(structuredBrief.title)}-image-${i + 1}.${ext}`;
-      try {
-        const response = await fetch(output.url);
-        const buffer = Buffer.from(await response.arrayBuffer());
-        await writeFile(join(outputDir, filename), buffer);
-        p.log.success(`Saved: ${join(outputDir, filename)}`);
-      } catch {
-        p.log.warn(`Could not save ${filename}, URL: ${output.url}`);
-      }
-    }
-  }
-
-  if (selections.video) {
-    const vidSpinner = p.spinner();
-    vidSpinner.start(
-      `Crafting prompt for ${selections.video.model.name}...`
-    );
-    const { prompt } = await promptEngineer.craftPrompt(
-      structuredBrief,
-      selections.video.model
-    );
-    vidSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
-
-    const genSpinner = p.spinner();
-    genSpinner.start("Generating video (this may take a while)...");
-    const result = await generate(
-      structuredBrief,
-      selections.video.model,
-      prompt,
-      {
-        referenceImageUrls: structuredBrief.referenceImages.map(
-          (r: { url: string }) => r.url
-        ),
-      }
-    );
-    genSpinner.stop(
-      result.status === "completed"
-        ? `Generated ${result.outputs.length} video(s)`
-        : "Generation failed"
-    );
-
-    for (let i = 0; i < result.outputs.length; i++) {
-      const output = result.outputs[i];
-      const filename = `${slugify(structuredBrief.title)}-video-${i + 1}.mp4`;
-      try {
-        const response = await fetch(output.url);
-        const buffer = Buffer.from(await response.arrayBuffer());
-        await writeFile(join(outputDir, filename), buffer);
-        p.log.success(`Saved: ${join(outputDir, filename)}`);
-      } catch {
-        p.log.warn(`Could not save ${filename}, URL: ${output.url}`);
+      // Ask for feedback
+      const imageFeedback = await p.select({
+        message: "How's the image?",
+        options: [
+          { value: "done", label: "✓  Looks good" },
+          { value: "feedback", label: "↺  Try again with feedback" },
+        ],
+      });
+      if (p.isCancel(imageFeedback) || imageFeedback === "done") {
+        imageIteration = undefined;
+      } else {
+        const feedbackText = await p.text({
+          message: "What should change?",
+          placeholder: "e.g. warmer lighting, more close-up, different angle...",
+        });
+        if (!p.isCancel(feedbackText)) {
+          imageIteration = { previousPrompt: prompt, feedback: feedbackText as string };
+        }
       }
     }
+
+    // ── Video generation ────────────────────────────────────────
+    if (selections.video) {
+      const vidSpinner = p.spinner();
+      vidSpinner.start(`Crafting video prompt for ${selections.video.model.name}${attemptLabel}...`);
+      const { prompt } = await promptEngineer.craftPrompt(
+        structuredBrief,
+        selections.video.model,
+        videoIteration
+      );
+      vidSpinner.stop(`Prompt: ${prompt.slice(0, 80)}...`);
+
+      const genSpinner = p.spinner();
+      genSpinner.start("Generating video (this may take a while)...");
+      const result = await generate(
+        structuredBrief,
+        selections.video.model,
+        prompt,
+        {
+          referenceImageUrls: structuredBrief.referenceImages.map(
+            (r: { url: string }) => r.url
+          ),
+        }
+      );
+      genSpinner.stop(
+        result.status === "completed"
+          ? `Generated ${result.outputs.length} video(s)`
+          : "Generation failed"
+      );
+
+      for (let i = 0; i < result.outputs.length; i++) {
+        const output = result.outputs[i];
+        const filename = `${slugify(structuredBrief.title)}-video-v${attempt}-${i + 1}.mp4`;
+        try {
+          const response = await fetch(output.url);
+          const buffer = Buffer.from(await response.arrayBuffer());
+          await writeFile(join(outputDir, filename), buffer);
+          p.log.success(`Saved: ${join(outputDir, filename)}`);
+        } catch {
+          p.log.warn(`Could not save ${filename}, URL: ${output.url}`);
+        }
+      }
+
+      // Ask for feedback
+      const videoFeedback = await p.select({
+        message: "How's the video?",
+        options: [
+          { value: "done", label: "✓  Looks good" },
+          { value: "feedback", label: "↺  Try again with feedback" },
+        ],
+      });
+      if (p.isCancel(videoFeedback) || videoFeedback === "done") {
+        videoIteration = undefined;
+      } else {
+        const feedbackText = await p.text({
+          message: "What should change?",
+          placeholder: "e.g. slower motion, brighter scene, show hands...",
+        });
+        if (!p.isCancel(feedbackText)) {
+          videoIteration = { previousPrompt: prompt, feedback: feedbackText as string };
+        }
+      }
+    }
+
+    // If no more feedback pending, we're done
+    if (!imageIteration && !videoIteration) break;
+    attempt++;
   }
 
   p.outro("Done! Check the output directory for your drafts.");

@@ -7,7 +7,7 @@ import type {
   ClarificationResult,
   GenerationResult,
   ModelSelection,
-} from "@pixel-pusher/core/client";
+} from "@heidi/core/client";
 import { BriefViewer } from "../components/BriefViewer";
 import { ClarificationChat } from "../components/ClarificationChat";
 import { ModelRecommendation } from "../components/ModelRecommendation";
@@ -26,9 +26,10 @@ export default function DraftPage() {
   const [modelSelection, setModelSelection] = useState<ModelSelection | null>(null);
   const [promptUsed, setPromptUsed] = useState("");
   const [result, setResult] = useState<GenerationResult | null>(null);
+  const [attempt, setAttempt] = useState(1);
+  const [iteration, setIteration] = useState<{ previousPrompt: string; feedback: string } | undefined>();
   const [error, setError] = useState("");
 
-  // Load brief from sessionStorage
   useEffect(() => {
     const stored = sessionStorage.getItem("brief");
     if (!stored) {
@@ -48,12 +49,8 @@ export default function DraftPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ brief: notionBrief }),
       });
-      const data = (await res.json()) as ClarificationResult & {
-        error?: string;
-      };
-
+      const data = (await res.json()) as ClarificationResult & { error?: string };
       if (data.error) throw new Error(data.error);
-
       if (data.complete && data.brief) {
         setStructuredBrief(data.brief);
         setStage("ready");
@@ -69,31 +66,22 @@ export default function DraftPage() {
   const handleAnswers = useCallback(
     async (answers: string[]) => {
       if (!brief) return;
-
       const newAllQuestions = [...allQuestions, questions];
       const newAllAnswers = [...allAnswers, answers];
       setAllQuestions(newAllQuestions);
       setAllAnswers(newAllAnswers);
-
       try {
-        const flatQuestions = newAllQuestions.flat();
-        const flatAnswers = newAllAnswers.flat();
-
         const res = await fetch("/api/clarify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             brief,
-            previousQuestions: flatQuestions,
-            answers: flatAnswers,
+            previousQuestions: newAllQuestions.flat(),
+            answers: newAllAnswers.flat(),
           }),
         });
-        const data = (await res.json()) as ClarificationResult & {
-          error?: string;
-        };
-
+        const data = (await res.json()) as ClarificationResult & { error?: string };
         if (data.error) throw new Error(data.error);
-
         if (data.complete && data.brief) {
           setStructuredBrief(data.brief);
           setStage("ready");
@@ -108,7 +96,7 @@ export default function DraftPage() {
     [brief, questions, allQuestions, allAnswers]
   );
 
-  async function handleGenerate() {
+  async function handleGenerate(feedbackIteration?: { previousPrompt: string; feedback: string }) {
     if (!structuredBrief) return;
     setStage("generating");
     setError("");
@@ -117,27 +105,35 @@ export default function DraftPage() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief: structuredBrief }),
+        body: JSON.stringify({
+          brief: structuredBrief,
+          iteration: feedbackIteration,
+        }),
       });
       const data = await res.json();
-
       if (data.error) throw new Error(data.error);
-
       setResult(data.result as GenerationResult);
       setModelSelection(data.modelSelection as ModelSelection);
       setPromptUsed(data.promptUsed as string);
       setStage("complete");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Generation failed");
-      setStage("ready");
+      setStage(feedbackIteration ? "complete" : "ready");
     }
+  }
+
+  function handleFeedback(feedback: string) {
+    const nextIteration = { previousPrompt: promptUsed, feedback };
+    setIteration(nextIteration);
+    setAttempt((a) => a + 1);
+    handleGenerate(nextIteration);
   }
 
   if (error && !brief) {
     return (
-      <div className="card p-6 !border-accent-red/30">
-        <p className="font-pixel text-[9px] text-accent-red tracking-widest mb-2">
-          ERROR
+      <div className="card p-6 border-status-error/30">
+        <p className="font-body text-sm font-semibold text-status-error mb-2">
+          Something went wrong
         </p>
         <p className="text-sm text-text-secondary">{error}</p>
       </div>
@@ -146,18 +142,17 @@ export default function DraftPage() {
 
   return (
     <div className="space-y-6">
-      {/* Brief summary */}
       {brief && <BriefViewer brief={brief} />}
 
-      {/* Error banner */}
       {error && (
-        <div className="card p-4 !border-accent-red/30">
-          <p className="font-pixel text-[9px] text-accent-red">ERROR</p>
+        <div className="card p-4 border-status-error/30">
+          <p className="font-body text-sm font-semibold text-status-error">
+            Something went wrong
+          </p>
           <p className="text-sm text-text-secondary mt-1">{error}</p>
         </div>
       )}
 
-      {/* Clarification stage */}
       {stage === "clarifying" && questions.length > 0 && (
         <ClarificationChat
           questions={questions}
@@ -168,44 +163,43 @@ export default function DraftPage() {
 
       {stage === "clarifying" && questions.length === 0 && (
         <div className="text-center py-6">
-          <p className="font-pixel text-[10px] text-accent-cyan cursor-blink">
-            ANALYZING BRIEF
+          <p className="font-body text-sm text-text-secondary">
+            Analysing your brief...
           </p>
         </div>
       )}
 
-      {/* Ready to generate */}
       {stage === "ready" && structuredBrief && (
         <div className="space-y-6">
           <ModelRecommendation brief={structuredBrief} />
           <div className="flex justify-center">
-            <button onClick={handleGenerate} className="btn-primary">
-              PUSH PIXELS
+            <button onClick={() => handleGenerate()} className="btn-primary">
+              Generate drafts
             </button>
           </div>
         </div>
       )}
 
-      {/* Generating */}
       {stage === "generating" && (
         <div className="text-center py-10">
-          <div className="inline-block animate-pulse-glow rounded-card p-6">
-            <p className="font-pixel text-sm text-accent-cyan">
-              PUSHING PIXELS...
+          <div className="inline-block rounded-card p-6">
+            <p className="font-display text-xl font-semibold text-bark">
+              {attempt > 1 ? "Regenerating with your feedback..." : "Generating your drafts..."}
             </p>
           </div>
-          <p className="font-mono text-xs text-muted mt-4">
-            Crafting prompt & generating assets
+          <p className="font-body text-sm text-text-muted mt-4">
+            Crafting prompts and generating assets — this may take a moment.
           </p>
         </div>
       )}
 
-      {/* Results */}
       {stage === "complete" && result && (
         <ResultsGallery
           result={result}
           modelSelection={modelSelection}
           promptUsed={promptUsed}
+          attempt={attempt}
+          onFeedback={handleFeedback}
         />
       )}
     </div>
