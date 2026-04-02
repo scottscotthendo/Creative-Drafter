@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@pixel-pusher/core"],
+  transpilePackages: ["@heidi/core"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.fal.media" },

@@ -5,6 +5,7 @@ import type {
   GenerationResult,
   GeneratedMedia,
 } from "./types.js";
+import { HEIDI_BRAND_REFERENCE_IMAGES } from "./heidi-brand.js";
 
 export function configureGenerator(falKey: string) {
   fal.config({ credentials: falKey });
@@ -152,13 +153,12 @@ function buildParams(
     }
 
     // FLUX General — reference images via IP-Adapter
-    if (
-      model.id === "fal-ai/flux-general" &&
-      options?.referenceImageUrls?.length
-    ) {
+    // Use user-provided refs if available, otherwise auto-inject a Heidi brand illustration
+    if (model.id === "fal-ai/flux-general") {
+      const refUrl = options?.referenceImageUrls?.[0] ?? HEIDI_BRAND_REFERENCE_IMAGES[0];
       params.ip_adapter = {
-        ip_adapter_image_url: options.referenceImageUrls[0],
-        scale: 0.6,
+        ip_adapter_image_url: refUrl,
+        scale: 0.45,
       };
     }
 
@@ -192,10 +192,11 @@ function buildParams(
   if (model.type === "video") {
     const duration = brief.videoDuration || 5;
 
-    // Reference image for image-to-video
-    if (options?.referenceImageUrls?.length) {
-      params.image_url = options.referenceImageUrls[0];
-    }
+    // Use user-provided reference image, or auto-inject a Heidi brand illustration
+    // as the starting frame. All video models are image-to-video and require an image.
+    const refImageUrl =
+      options?.referenceImageUrls?.[0] ?? HEIDI_BRAND_REFERENCE_IMAGES[2]; // generate-documents.png
+    params.image_url = refImageUrl;
 
     // LTX params
     if (model.id.includes("ltx")) {
@@ -210,11 +211,7 @@ function buildParams(
     // Veo params
     if (model.id.includes("veo")) {
       params.duration = `${duration}s`;
-      if (brief.aspectRatio === "9:16") {
-        params.aspect_ratio = "9:16";
-      } else {
-        params.aspect_ratio = "16:9";
-      }
+      params.aspect_ratio = brief.aspectRatio === "9:16" ? "9:16" : "16:9";
     }
 
     // Kling params

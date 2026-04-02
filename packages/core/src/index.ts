@@ -1,4 +1,5 @@
 export * from "./types.js";
+export { HEIDI_BRAND_CONTEXT, HEIDI_BRAND_REFERENCE_IMAGES } from "./heidi-brand.js";
 export { createNotionClient, fetchBrief, extractPageId } from "./notion.js";
 export {
   parseBriefFromMarkdown,

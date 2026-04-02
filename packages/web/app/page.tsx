@@ -91,35 +91,36 @@ export default function Home() {
     <div className="flex flex-col items-center gap-12 pt-16">
       {/* Hero */}
       <div className="text-center max-w-lg">
-        <h2 className="font-pixel text-lg text-text-bright leading-loose tracking-wide">
-          BRIEFS IN.
+        <h2 className="font-display text-4xl font-semibold text-bark leading-tight tracking-tight">
+          From brief to draft,
           <br />
-          <span className="text-accent-cyan">DRAFTS OUT.</span>
+          <span className="text-forest">in minutes.</span>
         </h2>
-        <p className="mt-5 text-sm text-text-secondary leading-relaxed">
-          Drop a Notion export or paste a URL. We ask the right questions,
-          pick the cheapest model that fits, and push pixels.
+        <p className="mt-4 text-base text-text-secondary font-body leading-relaxed">
+          Upload a Notion export or paste a page URL. Heidi Creative Studio
+          analyses your brief, asks only what&apos;s missing, and generates
+          on-brand assets ready for review.
         </p>
       </div>
 
-      {/* Mode toggle — Raycast-style segmented control */}
-      <div className="inline-flex rounded-btn bg-surface-2 p-1 border border-surface-4">
+      {/* Mode toggle */}
+      <div className="inline-flex rounded-btn bg-surface-1 p-1 border border-surface-3">
         <button
           onClick={() => setMode("upload")}
-          className={`font-pixel text-[9px] uppercase tracking-wider px-5 py-2.5 rounded-[6px] transition-all duration-150 ${
+          className={`font-body text-sm font-medium px-5 py-2 rounded-[8px] transition-all duration-150 ${
             mode === "upload"
-              ? "bg-surface-4 text-accent-cyan shadow-sm"
-              : "text-muted hover:text-text-secondary"
+              ? "bg-white text-bark shadow-card"
+              : "text-text-muted hover:text-text-secondary"
           }`}
         >
-          Upload Files
+          Upload files
         </button>
         <button
           onClick={() => setMode("notion")}
-          className={`font-pixel text-[9px] uppercase tracking-wider px-5 py-2.5 rounded-[6px] transition-all duration-150 ${
+          className={`font-body text-sm font-medium px-5 py-2 rounded-[8px] transition-all duration-150 ${
             mode === "notion"
-              ? "bg-surface-4 text-accent-cyan shadow-sm"
-              : "text-muted hover:text-text-secondary"
+              ? "bg-white text-bark shadow-card"
+              : "text-text-muted hover:text-text-secondary"
           }`}
         >
           Notion URL
@@ -132,38 +133,25 @@ export default function Home() {
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleMediaDrop}
-            className="card p-10 text-center hover:border-accent-cyan/20 transition-all duration-200 group"
+            className="card p-10 text-center hover:border-sunlight/40 transition-all duration-200"
           >
-            {/* Minimal pixel art arrow icon */}
-            <div className="flex justify-center mb-5 opacity-40 group-hover:opacity-60 transition-opacity">
-              <div className="grid grid-cols-5 gap-[2px]">
-                {[
-                  0,0,1,0,0,
-                  0,1,1,1,0,
-                  1,0,1,0,1,
-                  0,0,1,0,0,
-                  0,0,1,0,0,
-                ].map((on, i) => (
-                  <div
-                    key={i}
-                    className={`h-[5px] w-[5px] ${
-                      on ? "bg-accent-cyan" : "bg-transparent"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/illustrations/ask-heidi.png"
+              alt=""
+              className="h-20 mx-auto mb-4 opacity-90"
+            />
 
-            <p className="font-pixel text-[10px] text-text-secondary tracking-wider">
-              DROP FILES HERE
+            <p className="font-body text-sm font-medium text-text-secondary">
+              Drop files here
             </p>
-            <p className="mt-2 text-xs text-muted">
+            <p className="mt-1 text-xs text-text-muted">
               .md brief + images/videos from Notion export
             </p>
 
             <div className="mt-6 flex justify-center gap-3">
-              <label className="btn-secondary cursor-pointer !text-[9px] !px-4 !py-2">
-                CHOOSE .MD
+              <label className="btn-secondary cursor-pointer">
+                Choose .md file
                 <input
                   type="file"
                   accept=".md,.markdown,.txt"
@@ -173,8 +161,8 @@ export default function Home() {
                   }}
                 />
               </label>
-              <label className="btn-secondary cursor-pointer !text-[9px] !px-4 !py-2">
-                ADD MEDIA
+              <label className="btn-secondary cursor-pointer">
+                Add media
                 <input
                   type="file"
                   accept="image/*,video/*"
@@ -197,27 +185,27 @@ export default function Home() {
           {(markdownFile || mediaFiles.length > 0) && (
             <div className="mt-3 space-y-1.5">
               {markdownFile && (
-                <div className="flex items-center justify-between rounded-btn bg-surface-2 border border-surface-4 px-4 py-2.5">
-                  <span className="text-xs text-accent-green font-mono">
+                <div className="flex items-center justify-between rounded-btn bg-surface-1 border border-surface-3 px-4 py-2.5">
+                  <span className="text-xs text-status-success font-body">
                     {markdownFile.name}
                   </span>
                   <button
                     type="button"
                     onClick={() => setMarkdownFile(null)}
-                    className="font-pixel text-[8px] text-muted hover:text-accent-red transition-colors"
+                    className="text-xs text-text-muted hover:text-status-error transition-colors"
                   >
-                    [x]
+                    Remove
                   </button>
                 </div>
               )}
               {mediaFiles.map((file, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between rounded-btn bg-surface-2 border border-surface-4 px-4 py-2.5"
+                  className="flex items-center justify-between rounded-btn bg-surface-1 border border-surface-3 px-4 py-2.5"
                 >
-                  <span className="text-xs text-text-secondary font-mono">
-                    <span className="text-muted">
-                      {file.type.startsWith("video/") ? "[vid] " : "[img] "}
+                  <span className="text-xs text-text-secondary font-body">
+                    <span className="text-text-muted">
+                      {file.type.startsWith("video/") ? "video · " : "image · "}
                     </span>
                     {file.name}
                   </span>
@@ -226,9 +214,9 @@ export default function Home() {
                     onClick={() =>
                       setMediaFiles((prev) => prev.filter((_, j) => j !== i))
                     }
-                    className="font-pixel text-[8px] text-muted hover:text-accent-red transition-colors"
+                    className="text-xs text-text-muted hover:text-status-error transition-colors"
                   >
-                    [x]
+                    Remove
                   </button>
                 </div>
               ))}
@@ -240,7 +228,7 @@ export default function Home() {
             disabled={loading || !markdownFile}
             className="btn-primary w-full mt-5"
           >
-            {loading ? "LOADING..." : "START"}
+            {loading ? "Loading..." : "Analyse brief"}
           </button>
         </form>
       )}
@@ -248,8 +236,8 @@ export default function Home() {
       {/* Notion URL mode */}
       {mode === "notion" && (
         <form onSubmit={handleNotionSubmit} className="w-full max-w-xl">
-          <p className="mb-3 font-pixel text-[8px] text-muted tracking-wider">
-            REQUIRES NOTION_API_KEY ON SERVER
+          <p className="mb-3 text-xs text-text-muted font-body">
+            Requires a Notion API key — see setup docs.
           </p>
           <div className="flex gap-2">
             <input
@@ -264,7 +252,7 @@ export default function Home() {
               disabled={loading || !url.trim()}
               className="btn-primary"
             >
-              {loading ? "..." : "GO"}
+              {loading ? "..." : "Go"}
             </button>
           </div>
         </form>
@@ -272,9 +260,9 @@ export default function Home() {
 
       {/* Error */}
       {error && (
-        <div className="w-full max-w-xl card px-5 py-4 !border-accent-red/30">
-          <p className="font-pixel text-[9px] text-accent-red tracking-wider">
-            ERROR
+        <div className="w-full max-w-xl card px-5 py-4 border-status-error/30">
+          <p className="font-body text-sm font-semibold text-status-error">
+            Something went wrong
           </p>
           <p className="text-xs text-text-secondary mt-1">{error}</p>
         </div>
@@ -283,20 +271,75 @@ export default function Home() {
       {/* Steps */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-xl">
         {[
-          { n: "01", label: "LOAD BRIEF", desc: "Upload export or paste URL" },
-          { n: "02", label: "CLARIFY", desc: "AI asks what's missing" },
-          { n: "03", label: "GENERATE", desc: "Get image & video drafts" },
+          {
+            n: "01",
+            label: "Load your brief",
+            desc: "Upload a Notion export or paste the page URL",
+          },
+          {
+            n: "02",
+            label: "Clarify together",
+            desc: "Heidi asks only what's needed — no guesswork",
+          },
+          {
+            n: "03",
+            label: "Generate drafts",
+            desc: "Receive on-brand assets ready for review",
+          },
         ].map(({ n, label, desc }) => (
           <div key={n} className="card p-5 text-center">
-            <div className="font-pixel text-base text-accent-cyan/20">{n}</div>
-            <div className="font-pixel text-[8px] text-text-secondary mt-2 tracking-widest">
+            <div className="font-display text-3xl font-bold text-sunlight opacity-60">
+              {n}
+            </div>
+            <div className="font-body text-sm font-semibold text-bark mt-2">
               {label}
             </div>
-            <div className="text-[11px] text-muted mt-1.5 leading-relaxed">
+            <div className="text-xs text-text-muted mt-1.5 leading-relaxed">
               {desc}
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Brand reference grid */}
+      <div className="w-full max-w-xl">
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">
+          Brand reference images
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { src: "/brand/illustrations/ask-heidi.png", label: "Ask Heidi" },
+            { src: "/brand/illustrations/note-soap.png", label: "Session notes" },
+            {
+              src: "/brand/illustrations/generate-documents.png",
+              label: "Documents",
+            },
+            {
+              src: "/brand/illustrations/transcript-desktop.png",
+              label: "Transcript",
+            },
+            { src: "/brand/illustrations/note-custom.png", label: "Custom note" },
+            {
+              src: "/brand/illustrations/note-send-patient.png",
+              label: "Send to patient",
+            },
+          ].map(({ src, label }) => (
+            <div
+              key={src}
+              className="rounded-btn overflow-hidden border border-surface-3 bg-white"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={label}
+                className="w-full h-24 object-cover"
+              />
+              <p className="text-[11px] text-text-muted text-center py-1.5 font-body">
+                {label}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -122,6 +122,55 @@ function scoreModel(model: ModelProfile, brief: StructuredBrief): number {
     score += 20;
   }
 
+  // ─── Video: character/person motion ─────────────────────────────
+  // Briefs mentioning people, talking heads, UGC, or paid social need
+  // models with strong character motion — not just cheapest standard tier.
+  if (model.type === "video") {
+    const desc = `${brief.description} ${brief.additionalContext} ${brief.style} ${brief.mood}`.toLowerCase();
+    const hasCharacterMotion =
+      desc.includes("person") ||
+      desc.includes("doctor") ||
+      desc.includes("clinician") ||
+      desc.includes("talking") ||
+      desc.includes("ugc") ||
+      desc.includes("testimonial") ||
+      desc.includes("face") ||
+      desc.includes("talent") ||
+      desc.includes("character");
+    const isPaidSocial =
+      desc.includes("paid") ||
+      desc.includes("tiktok") ||
+      desc.includes("meta") ||
+      desc.includes("instagram") ||
+      desc.includes("youtube") ||
+      desc.includes("ad ") ||
+      desc.includes("pre-roll");
+
+    if (hasCharacterMotion) {
+      if (model.id.includes("kling")) score += 25; // best character motion
+      if (model.id.includes("veo")) score += 15;   // strong cinematic people
+      if (model.id.includes("ltx")) score -= 15;   // weak on character realism
+      if (model.id.includes("wan")) score -= 10;
+    }
+    if (isPaidSocial) {
+      if (model.qualityTier === "high") score += 10;
+      if (model.qualityTier === "draft") score -= 15;
+    }
+  }
+
+  // ─── Heidi brand style injection bonus ──────────────────────────
+  // FLUX General always gets a Heidi brand reference image via IP-Adapter,
+  // giving it a meaningful advantage for brand-consistent output when the
+  // brief doesn't already supply reference images.
+  if (
+    model.id === "fal-ai/flux-general" &&
+    brief.referenceImages.length === 0 &&
+    !isGraphicDesign &&
+    !(brief.textContent && brief.textContent.length > 0)
+  ) {
+    score += 18; // Brand reference image available — biases toward Heidi aesthetic
+  }
+
   return score;
 }
 
@@ -145,6 +194,25 @@ function explainScore(model: ModelProfile, brief: StructuredBrief): string[] {
 
   if (brief.referenceImages.length > 0 && model.supportsReferenceImage) {
     reasons.push("Can use your reference images");
+  }
+
+  if (
+    model.id === "fal-ai/flux-general" &&
+    brief.referenceImages.length === 0
+  ) {
+    reasons.push("Heidi brand illustration injected as style reference");
+  }
+
+  if (model.type === "video") {
+    const desc = `${brief.description} ${brief.additionalContext}`.toLowerCase();
+    const hasCharacterMotion =
+      desc.includes("person") || desc.includes("doctor") ||
+      desc.includes("clinician") || desc.includes("talking") ||
+      desc.includes("ugc") || desc.includes("testimonial") ||
+      desc.includes("face") || desc.includes("talent") || desc.includes("character");
+    if (hasCharacterMotion && model.id.includes("kling")) {
+      reasons.push("Best character motion for people-focused video");
+    }
   }
 
   reasons.push(`Cost: ${model.costDescription}`);

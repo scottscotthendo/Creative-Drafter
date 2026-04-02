@@ -4,14 +4,15 @@ import {
   generate,
   selectModel,
   createPromptEngineer,
-} from "@pixel-pusher/core";
-import type { StructuredBrief } from "@pixel-pusher/core";
+} from "@heidi/core";
+import type { StructuredBrief } from "@heidi/core";
 
 export async function POST(req: NextRequest) {
   try {
-    const { brief, modelOverride } = (await req.json()) as {
+    const { brief, modelOverride, iteration } = (await req.json()) as {
       brief: StructuredBrief;
       modelOverride?: string;
+      iteration?: { previousPrompt: string; feedback: string };
     };
 
     const falKey = process.env.FAL_KEY;
@@ -35,15 +36,16 @@ export async function POST(req: NextRequest) {
     // Select model
     const selection = selectModel(brief);
     const model = modelOverride
-      ? (await import("@pixel-pusher/core")).getModelById(modelOverride) ||
+      ? (await import("@heidi/core")).getModelById(modelOverride) ||
         selection.model
       : selection.model;
 
-    // Craft optimized prompt
+    // Craft optimized prompt — pass iteration context if refining
     const promptEngineer = createPromptEngineer(anthropicKey);
     const { prompt, negativePrompt } = await promptEngineer.craftPrompt(
       brief,
-      model
+      model,
+      iteration
     );
 
     // Generate

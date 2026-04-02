@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAnalyzer } from "@pixel-pusher/core";
-import type { NotionBrief } from "@pixel-pusher/core";
+import { createAnalyzer } from "@heidi/core";
+import type { NotionBrief } from "@heidi/core";
 
 export async function POST(req: NextRequest) {
   try {

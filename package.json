@@ -1,8 +1,8 @@
 {
-  "name": "pixel-pusher",
+  "name": "heidi-creative-studio",
   "version": "0.1.0",
   "private": true,
-  "description": "Generate video and graphic design drafts from Notion briefs using fal.ai",
+  "description": "AI-assisted creative drafting for Heidi Health",
   "workspaces": [
     "packages/core",
     "packages/web",
